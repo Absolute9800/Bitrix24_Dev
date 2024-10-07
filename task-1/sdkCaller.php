@@ -2,17 +2,43 @@
 
 declare(strict_types=1);
 use Bitrix24\SDK\Services\ServiceBuilderFactory;
+
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 require_once '../vendor/autoload.php';
+/*
+$debug = new Logger('debug');
+$currentDate = date('d-m-Y');
+$logFileName = $currentDate . '.log';
+$debug->pushHandler(new StreamHandler(__DIR__.'/logs/'.$logFileName, Level::Debug));
+*/
+
+// Логгер для создания записей из кода самостоятельно
+$rotatingFileHandler = new RotatingFileHandler('logs', 7, Level::Debug);
+$rotatingFileHandler->setFilenameFormat('{filename}/{date}.log', 'Y-m-d');
+$debug = new Logger('debug');
+$debug->pushHandler($rotatingFileHandler);
+
+// Логгер подключаемый в SDK
+$sdkRotatingFileHandler = new RotatingFileHandler('logs', 7, Level::Debug);
+$sdkRotatingFileHandler->setFilenameFormat('{filename}/{date}.log', 'Y-m-d');
+$logger = new Logger('sdkDebug');
+$logger->pushHandler($sdkRotatingFileHandler);
 
 $B24crm = ServiceBuilderFactory::createServiceBuilderFromWebhook(
-    'https://xga007.bitrix24.ru/rest/1/n2mm0p2kzfgxecbh/'
+    webhookUrl: 'https://xga007.bitrix24.ru/rest/1/n2mm0p2kzfgxecbh/',
+    logger: $logger
 );
 
 $B24tasks = ServiceBuilderFactory::createServiceBuilderFromWebhook(
-    'https://xga007.bitrix24.ru/rest/1/3idfz76z0qqhbaq2/'
+    webhookUrl: 'https://xga007.bitrix24.ru/rest/1/3idfz76z0qqhbaq2/',
+    logger: $logger
 );
 
-
+/*
 // Создание контакта CORE
 $result = $B24crm->core->call('crm.contact.add', [
     'fields' => [
@@ -25,9 +51,9 @@ $result = $B24crm->core->call('crm.contact.add', [
     ]
 ])->getResponseData()->getResult();
 print_r($result);
+*/
 
-
-
+/*
 // Создание контакта SDK
 $result = $B24crm->getCRMScope()->contact()->add([
     'NAME' => 'Глеб',
@@ -38,9 +64,9 @@ $result = $B24crm->getCRMScope()->contact()->add([
     'ASSIGNED_BY_ID' => 1,
 ])->getId();
 print_r($result);
+*/
 
-
-
+/*
 // Получение списка контактов CORE
 $result = $B24crm->core->call('crm.contact.list', [
     'filter' => [],
@@ -48,7 +74,7 @@ $result = $B24crm->core->call('crm.contact.list', [
     'select' => ['NAME', 'LAST_NAME'],
 ])->getResponseData()->getResult();
 print_r($result);
-
+*/
 
 
 // Получение списка контактов SDK
@@ -59,9 +85,10 @@ $result = $B24crm->getCRMScope()->contact()->list(
     $start = 1,
 )->getCoreResponse()->getResponseData()->getResult();
 print_r($result);
+$debug->debug('Получение списка контактов методом SDK', $result);
 
 
-
+/*
 // Создание задачи CORE
 $result = $B24tasks->core->call('tasks.task.add', [
     'fields' => [
@@ -72,9 +99,9 @@ $result = $B24tasks->core->call('tasks.task.add', [
     ]
 ])->getResponseData()->getResult();
 print_r($result);
+*/
 
-
-
+/*
 // Получение списка задач core
 $result = $B24tasks->core->call('tasks.task.list', [
     'order' => ['ID' => 'ASC'],
@@ -82,3 +109,4 @@ $result = $B24tasks->core->call('tasks.task.list', [
     'select' => ['ID', 'TITLE'],
 ])->getResponseData()->getResult();
 print_r($result);
+*/
