@@ -1,6 +1,18 @@
 <?php
 declare(strict_types=1);
 
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Level;
+use Monolog\Logger;
+
+require_once '../vendor/autoload.php';
+
+// Логгер подключаемый в SDK
+$sdkRotatingFileHandler = new RotatingFileHandler('logs', 7, Level::Debug);
+$sdkRotatingFileHandler->setFilenameFormat('{filename}/{date}.log', 'Y-m-d');
+$logger = new Logger('curlDebug');
+$logger->pushHandler($sdkRotatingFileHandler);
+
 const USER_TASKS_WEBHOOK = 'https://xga007.bitrix24.ru/rest/1/3idfz76z0qqhbaq2/';
 const CRM_WEBHOOK = 'https://xga007.bitrix24.ru/rest/1/n2mm0p2kzfgxecbh/';
 
@@ -37,7 +49,16 @@ if (curl_errno($curl)) {
 }
 curl_close($curl);
 // Print the response
-print_r(json_decode($response, true));
+try
+{
+    $responseArray = json_decode($response, true, 512, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    print_r($responseArray);
+}
+catch (JsonException $jsonException)
+{
+    $logger->error('Ошибка JSON decode: ' . $jsonException->getMessage());
+    echo 'Ошибка JSON decode: ' . $jsonException->getMessage() . PHP_EOL;
+}
 
 
 
@@ -65,7 +86,7 @@ curl_setopt_array($curl, [
     CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_URL => $url,
-    CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
+    CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
     CURLOPT_HEADER => false,
 ]);
 
@@ -79,7 +100,16 @@ if (curl_errno($curl)) {
 }
 curl_close($curl);
 // Print the response
-print_r(json_decode($response, true));
+try
+{
+    $responseArray = json_decode($response, true, 512, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    print_r($responseArray);
+}
+catch (JsonException $jsonException)
+{
+    $logger->error('Ошибка JSON decode: ' . $jsonException->getMessage());
+    echo 'Ошибка JSON decode: ' . $jsonException->getMessage() . PHP_EOL;
+}
 
 
 
@@ -115,7 +145,16 @@ if (curl_errno($curl)) {
 }
 curl_close($curl);
 // Print the response
-print_r(json_decode($response, true));
+try
+{
+    $responseArray = json_decode($response, true, 512, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    print_r($responseArray);
+}
+catch (JsonException $jsonException)
+{
+    $logger->error('Ошибка JSON decode: ' . $jsonException->getMessage());
+    echo 'Ошибка JSON decode: ' . $jsonException->getMessage() . PHP_EOL;
+}
 
 
 
@@ -141,7 +180,7 @@ curl_setopt_array($curl, [
     CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_URL => $url,
-    CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
+    CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
     CURLOPT_HEADER => false,
 ]);
 
@@ -155,5 +194,14 @@ if (curl_errno($curl)) {
 }
 curl_close($curl);
 // Print the response
-print_r(json_decode($response, true));
+try
+{
+    $responseArray = json_decode($response, true, 512, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    print_r($responseArray);
+}
+catch (JsonException $jsonException)
+{
+    $logger->error('Ошибка JSON decode: ' . $jsonException->getMessage());
+    echo 'Ошибка JSON decode: ' . $jsonException->getMessage() . PHP_EOL;
+}
 
